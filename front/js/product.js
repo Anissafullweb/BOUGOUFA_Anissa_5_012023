@@ -79,20 +79,27 @@ btn_EnvoyerPanier.addEventListener("click", (event) => {
     let choixPanier = {
         productId: recuperationId(),
         itemQuantity: document.getElementById("quantity").value,
-        colors: document.getElementById("colors").value,
+        color: document.getElementById("colors").value,
     }
     console.log(choixPanier);
 
     //------------------------------------Local storage ----------------------//
     //----------------Récupération des valeurs du panier pour les intégrer aux local storage--//
     //---------Déclaration d'un variable produit ajouté dans le local storage -----/
-    let produitsEnregistreDansLeLocalStorage = JSON.parse(localStorage.getItem("produit"));
+    let productInLocalStorage = localStorage.getItem("product");
     //--Json.parse c'est pour convertir les données au format JSON qui sont dans le local storage en objet JAVASCRIPT dans l'autre sens json.stringify--//
-    console.log(produitsEnregistreDansLeLocalStorage);
+    console.log(productInLocalStorage);
 
-    // Fonction fenêtre pop up 
+    // Fonction fenêtre pop up
+    if (choixPanier.itemQuantity <= 0 || choixPanier.itemQuantity > 100) {
+        alert("Votre quantité doit être comprie entre 1 et 100")
+        return
+    }
 
-
+    if (choixPanier.color === "") {
+        alert("Veuillez choisir une couleur")
+        return
+    }
 
 
 
@@ -100,20 +107,36 @@ btn_EnvoyerPanier.addEventListener("click", (event) => {
 
 
     //Si il y a de produits enregistés dans le local storage---//
-    if (produitsEnregistreDansLeLocalStorage) {
-        produitsEnregistreDansLeLocalStorage.push(choixPanier);
-        localStorage.setItem("produit", JSON.stringify(produitsEnregistreDansLeLocalStorage));
-        console.log(produitsEnregistreDansLeLocalStorage);
+    if (productInLocalStorage) {
+        console.log('avant ', productInLocalStorage);
+        productInLocalStorage = JSON.parse(productInLocalStorage)
+        console.log('apres', productInLocalStorage);
+
     }
+    // Une autre fonction si il existe ou pas//
     //Si il n'y a pas de produits enregistés dans le local storage---//
     else {
-        produitsEnregistreDansLeLocalStorage = [];
-        produitsEnregistreDansLeLocalStorage.push(choixPanier);
-        localStorage.setItem("produit", JSON.stringify(produitsEnregistreDansLeLocalStorage));
-        console.log(produitsEnregistreDansLeLocalStorage);
-    }
+        productInLocalStorage = [];
 
+    }
+    productInLocalStorage.push(choixPanier);
+    // Gestion de la quantité aux panier
+    console.log(productInLocalStorage)
+    let foundProduct = productInLocalStorage.find(product => { choixPanier.color == product.color });// && choixPanier.productId == product.productId });
+    console.log(foundProduct);
+    // if (itemQuantity.find != undefined) {
+    //     itemQuantity++
+    // }
+    // else {
+    //     itemQuantity = 1;
+
+    // }
+
+    localStorage.setItem("product", JSON.stringify(productInLocalStorage));
 });
+
+
+
 
 
 
