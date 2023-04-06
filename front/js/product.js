@@ -14,6 +14,7 @@ fetch(`http://localhost:3000/api/products/${recuperationId()}`)
     /* Definir la réponse de l'API en tant que productDetails et définir l'action à executer */
     .then((productDetails) => {
         displayProduct(productDetails)
+        document.title = productDetails.name;
     })
 
     /*Si la demande echoue */
@@ -78,7 +79,7 @@ btn_EnvoyerPanier.addEventListener("click", (event) => {
     /*Récuperation des valeurs du panier ***/
     let choixPanier = {
         productId: recuperationId(),
-        itemQuantity: document.getElementById("quantity").value,
+        itemQuantity: parseInt(document.getElementById("quantity").value),
         color: document.getElementById("colors").value,
     }
     console.log(choixPanier);
@@ -108,32 +109,34 @@ btn_EnvoyerPanier.addEventListener("click", (event) => {
 
     //Si il y a de produits enregistés dans le local storage---//
     if (productInLocalStorage) {
-        console.log('avant ', productInLocalStorage);
         productInLocalStorage = JSON.parse(productInLocalStorage)
-        console.log('apres', productInLocalStorage);
+        console.log(productInLocalStorage)
+
+        let foundIndexProduct = productInLocalStorage.findIndex(product => choixPanier.color == product.color && choixPanier.productId == product.productId);
+        console.log(foundIndexProduct);
+
+        if (foundIndexProduct === -1) {
+            productInLocalStorage.push(choixPanier);
+        } else {
+            console.log(productInLocalStorage[foundIndexProduct].itemQuantity);
+            productInLocalStorage[foundIndexProduct].itemQuantity += choixPanier.itemQuantity;
+        }
+        //Récupération de l'index dans le tableau
 
     }
     // Une autre fonction si il existe ou pas//
     //Si il n'y a pas de produits enregistés dans le local storage---//
     else {
         productInLocalStorage = [];
-
+        productInLocalStorage.push(choixPanier);
     }
-    productInLocalStorage.push(choixPanier);
-    // Gestion de la quantité aux panier
-    console.log(productInLocalStorage)
-    let foundProduct = productInLocalStorage.find(product => { choixPanier.color == product.color });// && choixPanier.productId == product.productId });
-    console.log(foundProduct);
-    // if (itemQuantity.find != undefined) {
-    //     itemQuantity++
-    // }
-    // else {
-    //     itemQuantity = 1;
 
-    // }
+
 
     localStorage.setItem("product", JSON.stringify(productInLocalStorage));
+    alert("Votre produit a bien été ajouté au panier")
 });
+
 
 
 
