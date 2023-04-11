@@ -28,7 +28,7 @@ function displayProduct(productDetails, productColor, productQuantity) {
     //  Créer (document.create element) les élèments HTML page cart
     const cartArticle = document.createElement("article");
     cartArticle.classList.add("cart__item");
-    cartArticle.setAttribute("data-id", productDetails.id);
+    cartArticle.setAttribute("data-id", productDetails._id);
     cartArticle.setAttribute("data-color", productColor);
     document.getElementById("cart__items").appendChild(cartArticle);
 
@@ -101,25 +101,52 @@ function displayProduct(productDetails, productColor, productQuantity) {
 
     const supprimerArticle = document.createElement("div");
     supprimerArticle.classList.add("cart__item__content__settings__delete");
-    inputCommande.appendChild(supprimerArticle);
+    cartItemContentSettings.appendChild(supprimerArticle);
+    // Création paragraphe supprimer
 
-    const pSupprimerArticle = document.createElement("p");
-    pSupprimerArticle.classList.add("deleteItem");
-    pSupprimerArticle.textContent = "Supprimer";
-    supprimerArticle.appendChild(pSupprimerArticle);
-    console.log(pSupprimerArticle);
+    const actionSupprimerArticle = document.createElement("p");
+    actionSupprimerArticle.classList.add("deleteItem");
+    actionSupprimerArticle.innerText = ("Supprimer");
+    supprimerArticle.appendChild(actionSupprimerArticle);
+
 
     // Add event listener il se passe quelquechose au niveau du click supprimer article
-    pSupprimerArticle.addEventListener("click", function suppresionArticle() {
-        removeFromCart(product);
+
+    actionSupprimerArticle.addEventListener("click", function suppresionArticle(event) {
+        console.log(event.target);
+        const pDeleteItem = event.target;
+        const articleItem = pDeleteItem.closest("article");
+        console.log(articleItem);
+        const productId = articleItem.getAttribute("data-id");
+        const productColor = articleItem.getAttribute("data-color");
+        removeFromCart(productId, productColor);
+        articleItem.remove();
         // Alerte pour confirmer la suppression
         alert("Votre article a bien été supprimer");
         // On recharge la page
-        document.location.reload();
+        //document.location.reload();
+
+
     })
 };
+function removeFromCart(productId, productColor) {
+    //J'aurais besoin de récupérer la quantité au panier 
+    // 1 - Récupérer l'ID la couleur  et le supprimer dans le local storage
+    let productInLocalStorage = JSON.parse(localStorage.getItem("product"));
+    // Cible 
+    // let foundIndexProduct = productInLocalStorage.findIndex(product => productColor == product.color && productId == product.productId);
+    //console.log(foundIndexProduct);
+    //  Supprimer element du tableau et ensuite renvoie le tableau local storage
+    const filteredProducts = productInLocalStorage.filter((product) => productColor !== product.color || productId !== productId)
+    localStorage.setItem("product", JSON.stringify(filteredProducts));
 
-// Affichage prix total
-// J'utilise getNumberOfProduct c'est une fonction qui permets de faire apparaître la quantité total
-productQuantity.textContent = getNumberOfProduct();// Déclarer ligne 14
-prixProduitCart = getTotalPrice(productDetails, productQuantity);
+    // Création cart__price
+    let syntheseQuantity = document.getElementById("totalQuantity");
+    syntheseQuantity.setAttribute("value", productQuantity);
+
+    let synthesePrix = document.getElementById("totalPrice")
+    synthesePrix = number(productDetails.price * productQuantity);
+};
+
+
+
