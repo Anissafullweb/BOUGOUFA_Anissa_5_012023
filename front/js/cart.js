@@ -144,9 +144,129 @@ function removeFromCart(productId, productColor) {
     let syntheseQuantity = document.getElementById("totalQuantity");
     syntheseQuantity.setAttribute("value", productQuantity);
 
-    let synthesePrix = document.getElementById("totalPrice")
+    let synthesePrix = document.getElementById("totalPrice");
     synthesePrix = number(productDetails.price * productQuantity);
 };
 
 
 
+
+//////////////////////////   Contrôle de validité et envoi du formulaire avec un post request   ////////////////////////////////
+
+// J'assigne une variable à chaque élément du HTML concernés avec querySelector.
+
+const firstName = document.querySelector("#firstName");
+const lastName = document.querySelector("#lastName");
+const address = document.querySelector("#address");
+const city = document.querySelector("#city");
+const email = document.querySelector("#email");
+
+const firstNameErr = document.querySelector("#firstNameErrorMsg");
+const lastNameErr = document.querySelector("#lastNameErrorMsg");
+const addressErr = document.querySelector("#addressErrorMsg");
+const cityErr = document.querySelector("#cityErrorMsg");
+const emailErr = document.querySelector("#emailErrorMsg");
+
+// J'établis des regex pour le contrôle des champs.
+const cityNameRegEx = /^[a-zA-Zàâäéèêëïîôöùûüç ,.'-]+$/;
+const addressRegEx = /^[0-9]{1,3}(?:(?:[,. ]){1}[-a-zA-Zàâäéèêëïîôöùûüç]+)*$/;
+const emailRegEx = /^([a-z\d\.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$/;
+
+// La fonction suivante permet de vérifier la validité des informations
+// rentrées par l'utilisateur dans les champs du formulaire.
+formControl = () => {
+
+    const testFormFields = (name, regEx, error) => {
+        if ((name.value).match(regEx)) {
+            error.innerHTML = "";
+        } else {
+            error.innerHTML = "Le format de saisie est incorrect";
+            return false;
+        }
+    };
+    // Je met un event change dans la méthode addeventlistener pour qu'un éventuel message d'erreur
+    // ne s'affiche que lorsque l'utilisateur a quitté le champ de saisi.
+    firstName.addEventListener("change", () => {
+        testFormFields(firstName, cityNameRegEx, firstNameErr);
+    });
+    lastName.addEventListener("change", () => {
+        testFormFields(lastName, cityNameRegEx, lastNameErr);
+    });
+    address.addEventListener("change", () => {
+        testFormFields(address, addressRegEx, addressErr);
+    });
+    city.addEventListener("change", () => {
+        testFormFields(city, cityNameRegEx, cityErr);
+    });
+    email.addEventListener("change", () => {
+        testFormFields(email, emailRegEx, emailErr);
+    });
+}
+
+formControl();
+
+// La fonction suivante permet de vérifier s'il n'y a pas de champs vides ou d'erreurs dans le formulaire
+// ou si le panier n'est pas vide.
+
+const orderBtn = document.querySelector("#order");
+
+orderBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    if (firstName.value == "" || lastName.value == "" || address.value == "" || city.value == "" || email.value == "") {
+        alert("Veuillez remplir tous les champs du formulaire");
+    }
+    else if (firstNameErr.innerHTML !== "" || lastNameErr.innerHTML !== "" || addressErr.innerHTML !== "" || cityErr.innerHTML !== "" || emailErr.innerHTML !== "") {
+        alert("Veuillez vérifier les erreurs dans le formulaire");
+    }
+    else if (productInLocalStorage === null || productInLocalStorage == 0) {
+        alert('Votre panier est vide, veuillez choisir un article');
+        window.location.href = "index.html";
+    }
+    else if (confirm("Confirmez-vous votre commande ? ") == true) {
+
+        let confirmationPanier = [];
+
+        for (let i = 0; i < productInLocalStorage.length; i++) {
+            confirmationPanier.push(productInLocalStorage[i].id);
+        }
+        // Les informations du formulaire et les produits sélectionnés sont récupérés
+        // dans l'objet order.    
+        let order = {
+            contact: {
+                firstName: firstName.value,
+                lastName: lastName.value,
+                address: address.value,
+                city: city.value,
+                email: email.value
+            },
+            products: confirmationPanier
+        };
+        // Les données de l'objet order sont envoyées au serveur avec la méthode post.
+        const options = {
+            method: 'POST',
+            body: JSON.stringify(order),
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        };
+        fetch('http://localhost:3000/api/products/order', options)
+            .then(res => res.json())
+            .then(data => {
+                localStorage.clear();
+
+                // La propriété window.location.href avec l'url confirmation.html nous redirige vers cette 
+                // dernière si la commande est réussi. On passe l'id de commande en valeur de la variable
+                // ?orderId dans la chaîne de requête. La réponse du post nous renvoi un numéro de commande 
+                // qui sera affiché dans la page confirmation.html.
+                window.location.href = "confirmation.html?orderId=" + data.orderId;
+
+            })
+            .catch(error => {
+                alert(error);
+            })
+    }
+    else {
+        return false;
+    }
+})
