@@ -176,7 +176,7 @@ const emailRegEx = /^([a-z\d\.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$/;
 // rentrées par l'utilisateur dans les champs du formulaire.
 formControl = () => {
 
-    const testFormFields = (name, regEx, error) => {
+    const testFormulaire = (name, regEx, error) => {
         if ((name.value).match(regEx)) {
             error.innerHTML = "";
         } else {
@@ -187,19 +187,19 @@ formControl = () => {
     // Je met un event change dans la méthode addeventlistener pour qu'un éventuel message d'erreur
     // ne s'affiche que lorsque l'utilisateur a quitté le champ de saisi.
     firstName.addEventListener("change", () => {
-        testFormFields(firstName, cityNameRegEx, firstNameErr);
+        testFormulaire(firstName, cityNameRegEx, firstNameErr);
     });
     lastName.addEventListener("change", () => {
-        testFormFields(lastName, cityNameRegEx, lastNameErr);
+        testFormulaire(lastName, cityNameRegEx, lastNameErr);
     });
     address.addEventListener("change", () => {
-        testFormFields(address, addressRegEx, addressErr);
+        testFormulaire(address, addressRegEx, addressErr);
     });
     city.addEventListener("change", () => {
-        testFormFields(city, cityNameRegEx, cityErr);
+        testFormulaire(city, cityNameRegEx, cityErr);
     });
     email.addEventListener("change", () => {
-        testFormFields(email, emailRegEx, emailErr);
+        testFormulaire(email, emailRegEx, emailErr);
     });
 }
 
