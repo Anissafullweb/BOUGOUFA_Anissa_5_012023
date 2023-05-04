@@ -52,7 +52,7 @@ function displayProduct(product) {
     productImg.setAttribute("alt", product.altTxt);
     productArticle.appendChild(productImg);
 
-    /*Création de l'element prudcutName (h3) ajout de la classe productName et du contenu Textuel et décalaration en tant que l'element enfant de l'element productArticle*/
+    /*Création de l'element productName (h3) ajout de la classe productName et du contenu Textuel et décalaration en tant que l'element enfant de l'element productArticle*/
     let productName = document.createElement("h3");
     productName.classList.add("productName");
     productName.textContent = product.name;

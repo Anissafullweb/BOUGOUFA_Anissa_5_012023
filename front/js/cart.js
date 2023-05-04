@@ -106,7 +106,15 @@ function displayProduct(productDetails, productColor, productQuantity) {
     inputCommande.setAttribute("max", 100);
     inputCommande.setAttribute("value", productQuantity)
     cartItemContentSettings.appendChild(inputCommande);
-
+    inputCommande.addEventListener("change", function modificationArticle(event) {
+        console.log(event.target);
+        const inputModification = event.target;
+        const article = inputCommande.closest("article");
+        const recuperationId = article.getAttribute("data-id");
+        const recuperationColor = article.getAttribute("data-color");
+        const recuperationQuantity = inputModification.value;
+        modifierPanier(recuperationId, recuperationColor, recuperationQuantity)
+    })
     // Creation class="cart__item__content__settings__delete
 
     const supprimerArticle = document.createElement("div");
@@ -139,24 +147,14 @@ function displayProduct(productDetails, productColor, productQuantity) {
 function removeFromCart(productId, productColor) {
     /* On écrase le tableau ElementsLocalStorage par le résultat du filtre On retire le produit correspondant à celui sur lequel ont vient de cliquer du tableau
     Le produit correspondant sera celui qui a la même couleur et id dans le tableau que celui cliqué */
-    ElementsLocalStorage = ElementsLocalStorage.filter((product) => productColor !== product.color || productId !== productId)
+    let ElementsLocalStorage = JSON.parse(localStorage.getItem("product"));
+    ElementsLocalStorage = ElementsLocalStorage.filter((product) => productColor !== product.color || productId !== product.productId)
 
-    /* Avant de faire une mise à jour dans le localStorage, on va créer un tableau, qui contiendra seulement 
-    les éléments de chaque produits qu'on veut envoyer dans le storage. On ne va pas envoyer le prix, qui existe sur chaque produits 
-    dans notre tableau ElementsLocalStorage, on va juste les garder dans le code
-     */
-    const productsWithoutPrice = []
-    for (const product of ElementsLocalStorage) {
-        productsWithoutPrice.push({
-            productId: product.productId,
-            color: product.color,
-            itemQuantity: product.itemQuantity
-        })
-    }
+
 
     /* On envoie le tableau de produits sans les prix dans le storage, après l'avoir stringify */
 
-    localStorage.setItem("product", JSON.stringify(productsWithoutPrice));
+    localStorage.setItem("product", JSON.stringify(ElementsLocalStorage));
 
     /** On appelle les fonctions pour mettre à jour la quantité et le prix total */
     updateTotalPrice()
@@ -184,6 +182,26 @@ function updateTotalQuantity() {
 
 }
 
+
+// Fonction de modification
+function modifierPanier(recuperationId, recuperationColor, recuperationQuantity) {
+    // Trouver l'index de l'élément à modifier
+    let ElementsLocalStorage = JSON.parse(localStorage.getItem("product"));
+    let foundIndexProduct = ElementsLocalStorage.findIndex((product) => recuperationColor === product.color && recuperationId === product.productId);
+    /* On envoie le tableau de produits sans les prix dans le storage, après l'avoir stringify */
+    ElementsLocalStorage[foundIndexProduct].itemQuantity = parseInt(recuperationQuantity);
+    console.log(typeof recuperationQuantity);
+    // Modifier la quantité d’un produit en fonction de son index depuis le LocalStorage, ligne 192
+    console.log(foundIndexProduct);
+    localStorage.setItem("product", JSON.stringify(ElementsLocalStorage));
+    // Modifier l'élément dans le tableau
+    location.reload();
+
+    // Mettre à jour le panier avec les modifications apportées
+    //console.log(panier);
+}
+
+
 //////////////////////////   Contrôle de validité et envoi du formulaire avec un post request   ////////////////////////////////
 
 // J'assigne une variable à chaque élément du HTML concernés avec querySelector.
@@ -204,17 +222,19 @@ const cityNameRegEx = /^[a-zA-Zàâäéèêëïîôöùûüç '-]+$/;
 const addressRegEx = /^([0-9]{1,4}[,. ]{1})?[-a-zA-Zàâäéèêëïîôöùûüç ]+$/
 const emailRegEx = /^([a-z\d\.-]+)@([a-z\d-.]+)(\.[a-z]{2,8})$/;
 
-
+const cityNameMessageError = "Ce champs ne requiert que des lettres";
+const mailMessageError = "Ce champs attends le format mail@example.com ";
+const addressMessageError = "Ce champs accepte des chiffres des lettres  virgule points et tirets"
 // La fonction suivante permet de vérifier la validité des informations
 // rentrées par l'utilisateur dans les champs du formulaire.
 
 formControl = () => {
 
-    const testFormulaire = (name, regEx, error) => {
+    const testFormulaire = (name, regEx, error, errorMessage) => {
         if ((name.value).match(regEx)) {
             error.innerHTML = "";
         } else {
-            error.innerHTML = "Le format de saisie est incorrect";
+            error.innerHTML = errorMessage;
             return false;
         }
     };
@@ -222,19 +242,19 @@ formControl = () => {
     // ne s'affiche que lorsque l'utilisateur a quitté le champ de saisi.
 
     firstName.addEventListener("change", () => {
-        testFormulaire(firstName, cityNameRegEx, firstNameErr);
+        testFormulaire(firstName, cityNameRegEx, firstNameErr, cityNameMessageError);
     });
     lastName.addEventListener("change", () => {
-        testFormulaire(lastName, cityNameRegEx, lastNameErr);
+        testFormulaire(lastName, cityNameRegEx, lastNameErr, cityNameMessageError);
     });
     address.addEventListener("change", () => {
-        testFormulaire(address, addressRegEx, addressErr);
+        testFormulaire(address, addressRegEx, addressErr, addressMessageError);
     });
     city.addEventListener("change", () => {
-        testFormulaire(city, cityNameRegEx, cityErr);
+        testFormulaire(city, cityNameRegEx, cityErr, cityNameMessageError);
     });
     email.addEventListener("change", () => {
-        testFormulaire(email, emailRegEx, emailErr);
+        testFormulaire(email, emailRegEx, emailErr, mailMessageError);
     });
 }
 
