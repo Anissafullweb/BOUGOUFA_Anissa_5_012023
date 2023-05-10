@@ -114,11 +114,13 @@ function displayProduct(productDetails, productColor, productQuantity) {
         const recuperationColor = article.getAttribute("data-color");
         const recuperationQuantity = inputModification.value;
         const quantityNumber = parseInt(recuperationQuantity, 10);
-        if (quantityNumber < 1 || quantityNumber >= 100) {
+        if (quantityNumber < 1 || quantityNumber > 100) {
+            location.reload();
             return alert("La quantité doit être comprise entre 1 et 100");
         }
         modifierPanier(recuperationId, recuperationColor, recuperationQuantity)
     })
+
     // Fonction fenêtre pop up
 
 
@@ -148,6 +150,7 @@ function displayProduct(productDetails, productColor, productQuantity) {
         articleItem.remove();
         // Alerte pour confirmer la suppression
         alert("Votre article a bien été supprimer");
+        location.reload();
     })
 
     function newFunction() {
@@ -180,8 +183,6 @@ function updateTotalPrice() {
         newTotalPrice += product.price * product.itemQuantity
     }
     totalPriceElement.innerText = newTotalPrice
-    location.reload
-
 }
 
 function updateTotalQuantity() {
@@ -191,8 +192,6 @@ function updateTotalQuantity() {
         newTotalQuantity += product.itemQuantity;
     }
     totalQuantityElement.innerText = newTotalQuantity;
-    location.reload
-
 }
 
 
