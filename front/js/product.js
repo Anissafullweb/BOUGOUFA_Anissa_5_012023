@@ -96,16 +96,10 @@ btn_EnvoyerPanier.addEventListener("click", (event) => {
         alert("Votre quantité doit être comprie entre 1 et 100")
         return
     }
-
     if (choixPanier.color === "") {
         alert("Veuillez choisir une couleur")
         return
     }
-
-
-
-
-
 
     //Si il y a de produits enregistés dans le local storage---//
     if (productInLocalStorage) {

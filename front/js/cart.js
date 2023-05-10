@@ -93,7 +93,7 @@ function displayProduct(productDetails, productColor, productQuantity) {
     // Creation P quantity
 
     const pQuantity = document.createElement("p");
-    pQuantity.innerText = ("Quantité : " + productQuantity);
+    pQuantity.innerText = ("Quantité : ");
     cartItemContentSettings.appendChild(pQuantity);
 
     // Creation input ajout d'attribut insertion quantité sélectionner par le client 
@@ -115,6 +115,9 @@ function displayProduct(productDetails, productColor, productQuantity) {
         const recuperationQuantity = inputModification.value;
         modifierPanier(recuperationId, recuperationColor, recuperationQuantity)
     })
+    // Fonction fenêtre pop up
+
+
     // Creation class="cart__item__content__settings__delete
 
     const supprimerArticle = document.createElement("div");
@@ -142,6 +145,10 @@ function displayProduct(productDetails, productColor, productQuantity) {
         // Alerte pour confirmer la suppression
         alert("Votre article a bien été supprimer");
     })
+
+    function newFunction() {
+        alert("La quantité doit être comprise entre 1 et 100");
+    }
 };
 
 function removeFromCart(productId, productColor) {
@@ -169,6 +176,7 @@ function updateTotalPrice() {
         newTotalPrice += product.price * product.itemQuantity
     }
     totalPriceElement.innerText = newTotalPrice
+    location.reload
 
 }
 
@@ -179,6 +187,7 @@ function updateTotalQuantity() {
         newTotalQuantity += product.itemQuantity;
     }
     totalQuantityElement.innerText = newTotalQuantity;
+    location.reload
 
 }
 
@@ -200,7 +209,6 @@ function modifierPanier(recuperationId, recuperationColor, recuperationQuantity)
     // Mettre à jour le panier avec les modifications apportées
     //console.log(panier);
 }
-
 
 //////////////////////////   Contrôle de validité et envoi du formulaire avec un post request   ////////////////////////////////
 
